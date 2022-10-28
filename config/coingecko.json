@@ -1,0 +1,9 @@
+{
+    "ETH": "ethereum",
+    "NEAR": "near",
+    "AVAX": "avalanche-2",
+    "MATIC": "matic-network",
+    "BSC": "binancecoin",
+    "FTM": "fantom",
+    "CRO": "crypto-com-chain"
+}
