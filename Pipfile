@@ -9,6 +9,9 @@ eth-abi = "*"
 web3 = "*"
 fastapi = "*"
 uvicorn = "*"
+pydantic = "*"
+pandas = "*"
+numpy = "*"
 
 [dev-packages]
 black = "*"

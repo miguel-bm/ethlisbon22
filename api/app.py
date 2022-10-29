@@ -1,4 +1,8 @@
+from typing import Union
 from fastapi import FastAPI, Query
+from api.models.accumulated_debt_point import AccumulatedDebtPoint
+from api.utils.curve_data_loader import load_curve_data
+from api.utils.curve_interpolator import interpoate_debt_curve
 
 app = FastAPI()
 
@@ -12,21 +16,10 @@ async def root():
 async def getAccumulatedDebt(
     asset: str,
     priceDescent: float = Query(ge=0.0, le=1.0),
-):
-    return {
-        "accumulatedLiquidations": 150234.324,
-        "unit": "USD",
-        "slippage": 0.02,
-        "perProtocol": [
-            {
-                "protocol": "Compound",
-                "accumulatedLiquidations": 150234.324,
-                "unit": "USD",
-            },
-            {
-                "protocol": "Euler",
-                "accumulatedLiquidations": 150234.324,
-                "unit": "USD",
-            },
-        ],
-    }
+) -> Union[AccumulatedDebtPoint, dict]:
+
+    curve_data = load_curve_data(asset)
+    if curve_data is None:
+        return {"error": f"Curve data for {asset} not found"}
+
+    return interpoate_debt_curve(curve_data, priceDescent)
