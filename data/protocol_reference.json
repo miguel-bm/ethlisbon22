@@ -1,0 +1,172 @@
+{
+    "compound": {
+        "ETH": {
+            "comptroller": "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
+            "cETH": "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5",
+            "deployBlock": 7710671,
+            "blockStepInInit": 50000,
+            "multicallSize": 200
+        }
+    },
+    "rariTetranode": {
+        "ETH": {
+            "comptroller": "0x814b02C1ebc9164972D888495927fe1697F0Fb4c",
+            "cETH": "0xF6551C22276b9Bf62FaD09f6bD6Cad0264b89789",
+            "deployBlock": 12860109,
+            "blockStepInInit": 50000,
+            "multicallSize": 500
+        }
+    },
+    "venus": {
+        "BSC": {
+            "comptroller": "0xfD36E2c2a6789Db23113685031d7F16329158384",
+            "cETH": "0xA07c5b74C9B40447a954e1466938b865b6BBea36",
+            "deployBlock": 2471512,
+            "blockStepInInit": 5000,
+            "multicallSize": 20
+        }
+    },
+    "traderJoe": {
+        "AVAX": {
+            "comptroller": "0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC",
+            "cETH": "0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC",
+            "deployBlock": 5449252,
+            "blockStepInInit": 2048,
+            "multicallSize": 100
+        }
+    },
+    "benqi": {
+        "AVAX": {
+            "comptroller": "0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4",
+            "cETH": "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c",
+            "deployBlock": 3046286,
+            "blockStepInInit": 2048,
+            "multicallSize": 100
+        }
+    },
+    "ironBank": {
+        "ETH": {
+            "comptroller": "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB",
+            "cETH": "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB",
+            "deployBlock": 11384868,
+            "blockStepInInit": 50000,
+            "multicallSize": 100
+        }
+    },
+    "ovix": {
+        "MATIC": {
+            "comptroller": "0x8849f1a0cB6b5D6076aB150546EddEe193754F1C",
+            "cETH": "0xE554E874c9c60E45F1Debd479389C76230ae25A8",
+            "deployBlock": 26312398,
+            "blockStepInInit": 10000,
+            "multicallSize": 100
+        }
+    },
+    "bastion": {
+        "NEAR": {
+            "comptroller": "0x6De54724e128274520606f038591A00C5E94a1F6",
+            "cETH": "0x4E8fE8fd314cFC09BDb0942c5adCC37431abDCD0",
+            "deployBlock": 60837829,
+            "blockStepInInit": 10000,
+            "multicallSize": 20
+        }
+    },
+    "apeSwap": {
+        "BSC": {
+            "comptroller": "0xAD48B2C9DC6709a560018c678e918253a65df86e",
+            "cETH": "0x34878F6a484005AA90E7188a546Ea9E52b538F6f",
+            "deployBlock": 12871489,
+            "blockStepInInit": 50000,
+            "multicallSize": 20
+        }
+    },
+    "rikki": {
+        "BSC": {
+            "comptroller": "0x4f3e801Bd57dC3D641E72f2774280b21d31F64e4",
+            "cETH": "0x157822aC5fa0Efe98daa4b0A55450f4a182C10cA",
+            "deployBlock": 15341030,
+            "blockStepInInit": 50000,
+            "multicallSize": 20
+        }
+    },
+    "inverse": {
+        "ETH": {
+            "comptroller": "0x4dCf7407AE5C07f8681e1659f626E114A7667339",
+            "cETH": "0x8e103Eb7a0D01Ab2b2D29C91934A9aD17eB54b86",
+            "cETH2": "0x697b4acAa24430F254224eB794d2a85ba1Fa1FB8",
+            "nonBorrowableMarkets": [
+                "0x65b35d6Eb7006e0e607BC54EB2dFD459923476fE",
+                "0x1637e4e9941D55703a7A5E7807d6aDA3f7DCD61B"
+            ],
+            "deployBlock": 11915867,
+            "blockStepInInit": 50000,
+            "multicallSize": 200,
+            "rektMarkets": [
+                "0x17786f3813E6bA35343211bd8Fe18EC4de14F28b",
+                "0xde2af899040536884e062D3a334F2dD36F34b4a4",
+                "0x697b4acAa24430F254224eB794d2a85ba1Fa1FB8"
+            ]
+        }
+    },
+    "moonwell": {
+        "MOONBEAM": {
+            "comptroller": "0x8E00D5e02E65A19337Cdba98bbA9F84d4186a180",
+            "cETH": "0x091608f4e4a15335145be0A279483C0f8E4c7955",
+            "deployBlock": 1284556,
+            "blockStepInInit": 2000,
+            "multicallSize": 20
+        }
+    },
+    "vatEth": {
+        "ETH": {
+            "address": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
+            "deployBlock": 8928152,
+            "blockStepInInit": 5000,
+            "multicallSize": 200,
+            "spotterAddress": "0x65C79fcB50Ca1594B025960e539eD7A9a6D434A3"
+        }
+    },
+    "aurigami": {
+        "NEAR": {
+            "comptroller": "0x817af6cfAF35BdC1A634d6cC94eE9e4c68369Aeb",
+            "cETH": "0xca9511B610bA5fc7E311FDeF9cE16050eE4449E9",
+            "deployBlock": 60501454,
+            "blockStepInInit": 10000,
+            "multicallSize": 20
+        }
+    },
+    "cream": {
+        "BSC": {
+            "comptroller": "0x589DE0F0Ccf905477646599bb3E5C622C84cC0BA",
+            "cETH": "0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A",
+            "deployBlock": 100320,
+            "blockStepInInit": 5000,
+            "multicallSize": 20
+        }
+    },
+    "aave": {
+        "ETH": {
+            "lendingPoolAddressesProviderAddress": "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5",
+            "deployBlock": 11362579,
+            "blockStepInInit": 5000,
+            "multicallSize": 200
+        }
+    },
+    "granary": {
+        "FTM": {
+            "lendingPoolAddressesProviderAddress": "0x8b9D58E2Dc5e9b5275b62b1F30b3c0AC87138130",
+            "deployBlock": 32461920,
+            "blockStepInInit": 1000,
+            "multicallSize": 200
+        }
+    },
+    "tectonic": {
+        "CRO": {
+            "comptroller": "0xb3831584acb95ED9cCb0C11f677B5AD01DeaeEc0",
+            "cETH": "0xeAdf7c01DA7E93FdB5f16B0aa9ee85f978e89E95",
+            "deployBlock": 570286,
+            "blockStepInInit": 2000,
+            "multicallSize": 20
+        }
+    }
+}
