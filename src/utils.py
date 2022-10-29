@@ -36,7 +36,7 @@ def get_avalanche_web3_client() -> Web3:
 
 def get_cronos_web3_client() -> Web3:
     load_dotenv()
-    url = f"https://mainnet.cronoslabs.com/v1/{CRONOS_API_KEY}"
+    url = f"https://mainnet-archive.cronoslabs.com/v1/{CRONOS_API_KEY}"
     print(f"Connecting to {url}")
     client = Web3(HTTPProvider(url))
     assert client.isConnected(), "Web3 client is not connected"

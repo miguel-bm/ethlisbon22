@@ -37,6 +37,8 @@ def get_eth_price(token: str) -> Tuple[str, float]:
         if response.status_code != 200:
             return token, 0.0
         print(response.json())
+        if response.status_code != 200:
+            return token, 1633.0
         return token, response.json()["USD"]
     api_price = response.json()[coingecko_symbol]["usd"]
     return token, api_price
