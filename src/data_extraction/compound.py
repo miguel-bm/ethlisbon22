@@ -1,80 +1,80 @@
+import json
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import eth_abi
-from abis import ABIS
+from src.abis import ABIS
+from src.addresses import MULTICALL_ADDRESSES
 from src.borrower import Borrower
 from src.protocols_data import CompoundProtocolReference
+from src.token_prices import get_eth_price, get_token_price
 from web3 import Web3
 from web3.eth import Contract
-from src.addresses import MULTICALL_ADDRESSES
 
 
 class CompoundDataExtractor:
     def __init__(
         self,
         w3: Web3,
-        protocol_info: Dict[str, CompoundProtocolReference],
+        protocol_info: CompoundProtocolReference,
         network: str,
     ):
         self.w3 = w3
         self.network = network
         self.protocol_info = protocol_info
-        protocol_network_info = self.protocol_info[network]
 
-        self.ceth_addresses = protocol_network_info.ceth_addresses
-        self.non_borrowable_markets = protocol_network_info.non_borrowable_markets
-        self.non_supplyable_markets = protocol_network_info.non_supplyable_markets
-        self.deploy_block = protocol_network_info.deploy_block
-        self.block_step_in_init = protocol_network_info.block_step_in_init
-        self.multicall_size = protocol_network_info.multicall_size
+        self.ceth_addresses = protocol_info.ceth_addresses
+        self.non_borrowable_markets = protocol_info.non_borrowable_markets
+        self.non_supplyable_markets = protocol_info.non_supplyable_markets
+        self.deploy_block = protocol_info.deploy_block
+        self.block_step_in_init = protocol_info.block_step_in_init
+        self.multicall_size = protocol_info.multicall_size
 
         self.comptroller: Contract = w3.eth.contract(
-            abi=ABIS.comptroller, address=protocol_network_info.comptroller_address
+            abi=ABIS.comptroller, address=protocol_info.comptroller_address
         )
         self.multicall: Contract = w3.eth.contract(
             abi=ABIS.multicall, address=MULTICALL_ADDRESSES[network]
         )
 
-        self.prices: Dict[str, int] = {}
-        self.markets: List = []
-        self.users: Dict[str, Borrower] = {}
-        self.user_list: List = []
-
-        self.tvl = 0
-        self.total_borrows = 0
-
-        self.output = {}
-
-    def get_market_addresses(self) -> List[str]:
+    def _get_market_addresses(self) -> List[str]:
         markets: List[str] = self.comptroller.functions["getAllMarkets"]().call()
         return [self.w3.toChecksumAddress(address) for address in markets]
 
-    def get_market_token_price(self, market_address: str) -> float:
+    def _get_market_token_price(self, market_address: str) -> float:
         ctoken: Contract = self.w3.eth.contract(abi=ABIS.cToken, address=market_address)
 
         if market_address in self.ceth_addresses:
-            symbol, price = get_token_price(self.network)
+            symbol, price = get_eth_price(self.network)
             balance = self.w3.eth.get_balance(market_address)
         else:
             underlying: str = ctoken.functions["underlying"]().call()
-            symbol, price = get_price(self.network, underlying, self.w3)
-
+            symbol, price = get_token_price(self.network, underlying, self.w3)
             token: Contract = self.w3.eth.contract(abi=ABIS.cToken, address=underlying)
             balance = token.functions["balanceOf"](market_address).call()
-
-        print(
-            f"Symbol {symbol} ({underlying}) ; market {market_address} ; price {price} ; balance {balance}"
-        )
 
         # TODO: if price == 0, get fallback price
         return price
 
-    def initialize_prices(self):
-        self.markets = self.get_market_addresses()
-        self.prices = {m: self.get_market_token_price(m) for m in self.markets}
+    def extract_data(self, save_to: str, users_limit: Optional[int] = None):
+        # Get markets token prices
+        markets = self._get_market_addresses()
+        prices = {m: self._get_market_token_price(m) for m in markets}
 
-    def collect_all_users(self):
+        # Get all users
+        user_addresses = self._get_all_user_addresses(users_limit)
+
+        # Get user data
+        user_data = self._get_users_data(markets, user_addresses, self.multicall_size)
+
+        # Export user data
+        user_data_json = {k: v.get_markets_values(prices) for k, v in user_data.items()}
+        with open(Path(save_to) / "user_data.json", "w") as f:
+            json.dump(user_data_json, f)
+
+    def _get_all_user_addresses(self, limit: Optional[int] = None) -> List[str]:
         current_block = self.w3.eth.get_block_number() - 10
+        user_addresses = []
         for block in range(self.deploy_block, current_block, self.block_step_in_init):
             print(f"collect users at block {block}")
             end_block = (
@@ -89,20 +89,32 @@ class CompoundDataExtractor:
             )
             for event in events:
                 account: Optional[str] = event.get("args", {}).get("account", None)
-                if account is None:
-                    continue
-                account = self.w3.toChecksumAddress(account)
-                if account not in self.users:
-                    self.user_list.append(account)
+                if account is not None:
+                    account = self.w3.toChecksumAddress(account)
+                    if account not in user_addresses:
+                        user_addresses.append(account)
 
-    def update_all_users(self):
-        users = self.user_list
-        batch_size = self.multicall_size
-        for i in range(0, len(users), batch_size):
-            print(f"update users {i} / {len(users)}")
-            self.update_users_batch(users[i : i + batch_size])
+                if limit is not None:
+                    if len(user_addresses) >= limit:
+                        return user_addresses[:limit]
 
-    def update_users_batch(self, user_addresses: List[str]):
+        return user_addresses
+
+    def _get_users_data(
+        self, markets: List[str], user_addresses: List[str], batch_size: int
+    ):
+        user_data: Dict[str, Borrower] = {}
+        for i in range(0, len(user_addresses), batch_size):
+            print(f"Updating users info: {i} / {len(user_addresses)}")
+            batch_addresses = user_addresses[i : i + batch_size]
+            batch_users_data = self._get_users_data_batch(markets, batch_addresses)
+            user_data.update(batch_users_data)
+
+        return user_data
+
+    def _get_users_data_batch(
+        self, markets: list[str], user_addresses: List[str]
+    ) -> Dict[str, Borrower]:
         asset_in_calls = [
             {
                 "target": self.comptroller.address,
@@ -122,7 +134,7 @@ class CompoundDataExtractor:
         borrow_balance_calls = []
 
         for user_address in user_addresses:
-            for market in self.markets:
+            for market in markets:
                 collateral_balance_calls.append(
                     {
                         "target": market,
@@ -161,6 +173,7 @@ class CompoundDataExtractor:
 
         user_index = 0
         global_index = 0
+        users_data = {}
         for user_address in user_addresses:
             success = True
             success = success and asset_in_result[user_index][0]
@@ -176,7 +189,7 @@ class CompoundDataExtractor:
             borrow_balances = {}
             collateral_balances = {}
 
-            for market in self.markets:
+            for market in markets:
                 success = success and collateral_balance_results[global_index][0]
                 success = success and borrow_balance_results[global_index][0]
                 collateral_balance = (
@@ -204,6 +217,7 @@ class CompoundDataExtractor:
                 asset_in,
                 borrow_balances,
                 collateral_balances,
-                not success,
             )
-            self.users[user_address] = user_data
+            users_data[user_address] = user_data
+
+        return users_data

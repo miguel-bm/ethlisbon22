@@ -26,8 +26,9 @@ class CompoundProtocolReference:
             if a is not None
         ]
 
-    def from_dict(self, data: dict) -> "CompoundProtocolReference":
-        return CompoundProtocolReference(
+    @classmethod
+    def from_dict(cls, data: dict) -> "CompoundProtocolReference":
+        return cls(
             comptroller_address=Web3.toChecksumAddress(data["comptroller"]),
             ceth_address=Web3.toChecksumAddress(data["cETH"]),
             deploy_block=int(data["deployBlock"]),
@@ -44,3 +45,11 @@ class CompoundProtocolReference:
                 Web3.toChecksumAddress(a) for a in data.get("rektMarkets", list())
             ],
         )
+
+    @classmethod
+    def from_json_reference(
+        cls, name: str, network: str
+    ) -> "CompoundProtocolReference":
+        with open(PROTOCOL_REFERENCE_PATH, "r") as f:
+            data = json.load(f)
+        return cls.from_dict(data[name][network])

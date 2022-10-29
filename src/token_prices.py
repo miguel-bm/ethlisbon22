@@ -1,8 +1,17 @@
 import json
 from time import sleep
-from typing import Dict, List, Optional, Tuple
-
+from typing import Dict, List, Optional, Tuple, Callable
+from pathlib import Path
 import requests
+from web3 import Web3
+from web3.eth import Contract
+
+from src.abis import ABIS
+
+COINGECKO_SYMBOLS_PATH = Path("data/coingecko_symbols.json")
+
+with COINGECKO_SYMBOLS_PATH.open("r") as f:
+    coingecko_symbols = json.load(f)
 
 
 def request_get_with_retry(url: str, retries: int = 10) -> requests.Response:
@@ -16,24 +25,23 @@ def request_get_with_retry(url: str, retries: int = 10) -> requests.Response:
     return response
 
 
-def get_token_price(token: str) -> Tuple[str, float, int]:
-    coingecko_symbol = coingecko[token]
+def get_eth_price(token: str) -> Tuple[str, float]:
+    coingecko_symbol = coingecko_symbols[token]
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={coingecko_symbol}&vs_currencies=usd"
     response = request_get_with_retry(url)
     if response.status_code != 200:
+        # fallback
         url = f"https://min-api.cryptocompare.com/data/price?fsym={token}&tsyms=USD"
         response = request_get_with_retry(url)
         if response.status_code != 200:
             return token, 0.0
         return token, response.json()["USD"]
     api_price = response.json()[coingecko_symbol]["usd"]
-    return token, api_price, 0
+    return token, api_price
 
 
 def get_chainlink_price(feed_address: str, web3: Web3) -> float:
-    feed: Contract = web3.eth.contract(
-        abi=price_addresses["chainlinkAbi"], address=feed_address
-    )
+    feed: Contract = web3.eth.contract(abi=ABIS.chainlink, address=feed_address)
     answer = feed.functions["latestAnswer"]().call()
     decimals = feed.functions["decimals"]().call()
     factor = 10 ** (18 - decimals)
@@ -58,23 +66,21 @@ def fetch_price(network: str, address: str) -> float:
             if len(market_data) > 0:
                 return market_data[0]["price"] or 0.0
 
-    url = f"https://api.coingecko.com/api/v3/simple/token_price/{coingecko[network]}?contract_addresses={address}&vs_currencies=USD"
+    url = f"https://api.coingecko.com/api/v3/simple/token_price/{coingecko_symbols[network]}?contract_addresses={address}&vs_currencies=USD"
     response = requests.get(url)
     if response.status_code != 200 or len(response.json()) == 0:
         return 0.0
     return response.json()[network]["usd"]
 
 
-def get_price(network: str, address: str, web3: Web3) -> Tuple[str, float, int]:
-    token: Contract = web3.eth.contract(
-        abi=price_addresses["erc20Abi"], address=address
-    )
-    decimal = token.functions["decimals"]().call()
+def get_token_price(network: str, address: str, web3: Web3) -> Tuple[str, float]:
+    token: Contract = web3.eth.contract(abi=ABIS.erc20, address=address)
+    # decimal = token.functions["decimals"]().call()
     try:
         symbol = (
             token.functions["symbol"]().call()
             if "symbol" in token.functions
-            else "unknown"
+            else "unknown_symbol"
         )
     except:
         symbol = "unknown"
@@ -83,16 +89,7 @@ def get_price(network: str, address: str, web3: Web3) -> Tuple[str, float, int]:
     api_price = fetch_price(network, address)
 
     if api_price == 0.0 and network == "ETH":
-        # TODO use zappier
+        # TODO use zappier?
         pass
 
-    return symbol, api_price, decimal
-
-    if decimal > 18:
-        normalizer = decimal - 18
-        price = web3.to_wei(api_price, "ether") / (10**normalizer)
-    else:
-        normalizer = 18 - decimal
-        price = web3.to_wei(api_price, "ether") * (10**normalizer)
-
-    return symbol, price / 1e18
+    return symbol, api_price
