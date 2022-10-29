@@ -2,15 +2,15 @@ from pydantic import BaseModel
 
 
 class AccumulatedDebtPoint(BaseModel):
-    accumulatedLiquidations: float
+    accumulatedLiquidations: str
     unit: str
-    slippage: float
+    slippage: str
 
     class Config:
         schema_extra = {
             "example": {
-                "accumulatedLiquidations": 150234.324,
+                "accumulatedLiquidations": "15023432475928445910365",
                 "unit": "USD",
-                "slippage": 0.02,
+                "slippage": "230194665941057366",
             }
         }

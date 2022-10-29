@@ -15,11 +15,12 @@ async def root():
 @app.get("/getAccumulatedDebt")
 async def getAccumulatedDebt(
     asset: str,
-    priceDescent: float = Query(ge=0.0, le=1.0),
+    priceDescent: int = Query(ge=0, le=1e18),
 ) -> Union[AccumulatedDebtPoint, dict]:
+    price_descent_interpreted = priceDescent / 1e18
 
     curve_data = load_curve_data(asset)
     if curve_data is None:
         return {"error": f"Curve data for {asset} not found"}
 
-    return interpoate_debt_curve(curve_data, priceDescent)
+    return interpoate_debt_curve(curve_data, price_descent_interpreted)

@@ -29,12 +29,14 @@ def get_eth_price(token: str) -> Tuple[str, float]:
     coingecko_symbol = coingecko_symbols[token]
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={coingecko_symbol}&vs_currencies=usd"
     response = request_get_with_retry(url)
+    print(response.json())
     if response.status_code != 200:
         # fallback
         url = f"https://min-api.cryptocompare.com/data/price?fsym={token}&tsyms=USD"
         response = request_get_with_retry(url)
         if response.status_code != 200:
             return token, 0.0
+        print(response.json())
         return token, response.json()["USD"]
     api_price = response.json()[coingecko_symbol]["usd"]
     return token, api_price

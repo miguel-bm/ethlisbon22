@@ -75,8 +75,10 @@ class CompoundDataExtractor:
     def _get_all_user_addresses(self, limit: Optional[int] = None) -> List[str]:
         current_block = self.w3.eth.get_block_number() - 10
         user_addresses = []
+        print(f"Current block is: {current_block}")
+        print(f"Deploy block is: {self.deploy_block}")
         for block in range(self.deploy_block, current_block, self.block_step_in_init):
-            print(f"collect users at block {block}")
+            print(f"Collect users at block {block}")
             end_block = (
                 current_block
                 if (block + self.block_step_in_init > current_block)
