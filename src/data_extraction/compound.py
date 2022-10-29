@@ -10,6 +10,7 @@ from src.protocols_data import CompoundProtocolReference
 from src.token_prices import get_eth_price, get_token_price
 from web3 import Web3
 from web3.eth import Contract
+from time import sleep
 
 
 class CompoundDataExtractor:
@@ -72,6 +73,28 @@ class CompoundDataExtractor:
         with Path(save_to).open("w") as f:
             json.dump(user_data_json, f)
 
+    def _get_events_with_retry(
+        self,
+        from_block: int,
+        to_block_int,
+        num_retries: int = 10,
+        wait_time: float = 5.0,
+    ) -> List[Dict]:
+        for _ in range(num_retries):
+            try:
+                events: List[dict] = (
+                    self.comptroller.events["MarketEntered"]
+                    .createFilter(fromBlock=from_block, toBlock=to_block_int)
+                    .get_all_entries()
+                )
+                return events
+            except Exception as e:
+                print(f"Exception: {e}")
+                print(f"Retrying in {wait_time} seconds")
+                sleep(wait_time)
+        print(f"FAILED to get events from block {from_block} to {to_block_int}")
+        return []
+
     def _get_all_user_addresses(self, limit: Optional[int] = None) -> List[str]:
         current_block = self.w3.eth.get_block_number() - 10
         user_addresses = []
@@ -84,11 +107,7 @@ class CompoundDataExtractor:
                 if (block + self.block_step_in_init > current_block)
                 else block + self.block_step_in_init
             )
-            events: List[dict] = (
-                self.comptroller.events["MarketEntered"]
-                .createFilter(fromBlock=block, toBlock=end_block)
-                .get_all_entries()
-            )
+            events = self._get_events_with_retry(block, end_block)
             for event in events:
                 account: Optional[str] = event.get("args", {}).get("account", None)
                 if account is not None:
