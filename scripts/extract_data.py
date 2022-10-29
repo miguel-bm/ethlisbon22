@@ -12,4 +12,4 @@ if __name__ == "__main__":
         protocol_info=protocol_info,
         network=network,
     )
-    extractor.extract_data(save_to="data/compound_data.json", users_limit=20)
+    extractor.extract_data(save_to="data/users/compound_data.json")

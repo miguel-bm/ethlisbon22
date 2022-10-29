@@ -1,0 +1,11 @@
+version: "3.8"
+
+services: 
+  prod:
+    image: ethlisbon:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+  

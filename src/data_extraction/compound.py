@@ -69,7 +69,7 @@ class CompoundDataExtractor:
 
         # Export user data
         user_data_json = {k: v.get_markets_values(prices) for k, v in user_data.items()}
-        with open(Path(save_to) / "user_data.json", "w") as f:
+        with Path(save_to).open("w") as f:
             json.dump(user_data_json, f)
 
     def _get_all_user_addresses(self, limit: Optional[int] = None) -> List[str]:
