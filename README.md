@@ -17,18 +17,18 @@ We can monitor the accumulated debts accross these DeFi lending markets to see w
 
 This project consists of data extraction jobs, a transform job that applies the slippage model, an API, and an oracle.
 
-### Data extraction
+### 1. Data extraction
 
 These are ETLs that extract on-chain borrower data from multiple DeFi lending protocols.
 
 How to run:
 
-#### Python-based jobs
+#### 2. Python-based jobs
 
  * Install the requirements with `pipenv install`
  * Run any specific job by running its script. E.g. `pipenv run python etl/extract_data_compound.py`
  
-#### Node-based jobs
+#### 3. Node-based jobs
 
  * Install the requirements with `npm install`
  * Run with `npm start`
@@ -44,7 +44,7 @@ How to run:
  * Install the requirements with `pipenv install`
  * Run the transform job with `pipevn run python etl/apply_model.py`
 
-### API
+### 4. API
 
 This is the API used by the Risk Management oracle.
 
