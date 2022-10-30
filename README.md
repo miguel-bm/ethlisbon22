@@ -6,6 +6,13 @@ Liquidations are essential to the health of a DeFi lending protocol. However, th
 
 We can monitor the accumulated debts accross these DeFi lending markets to see where new liquidations would trigger. Moreover, we can apply an slippage model in order to check how these liquidations would further impact the market, and even cause liquidation cascades.
 
+## Team
+
+ * [Alejandro Lanaspa](https://github.com/AlejandroLanaspa)
+ * [Carlos Bort](https://github.com/carlosbort)
+ * [Marcelino García](https://github.com/mgarciate)
+ * [Miguel Blanco](https://github.com/miguel-bm)
+
 ## Description
 
 ### Data extraction
