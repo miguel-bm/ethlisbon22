@@ -15,6 +15,8 @@ We can monitor the accumulated debts accross these DeFi lending markets to see w
 
 ## Description
 
+This project consists of data extraction jobs, a transform job that applies the slippage model, an API, and an oracle.
+
 ### Data extraction
 
 These are ETLs that extract on-chain borrower data from multiple DeFi lending protocols.
