@@ -23,17 +23,17 @@ These are ETLs that extract on-chain borrower data from multiple DeFi lending pr
 
 How to run:
 
-#### 2. Python-based jobs
+#### 1.2 Python-based jobs
 
  * Install the requirements with `pipenv install`
  * Run any specific job by running its script. E.g. `pipenv run python etl/extract_data_compound.py`
  
-#### 3. Node-based jobs
+#### 1.3 Node-based jobs
 
  * Install the requirements with `npm install`
  * Run with `npm start`
 
-### Accumulated liquidations curve calculation
+### 2. Accumulated liquidations curve calculation
 
 This is a Python script that takes the output from the data extraction jobs and aggregates it to the ecosystem-wide accumulated liquidations curve. Additionally, it applies a slippage model in order to estimate the price slippage caused by the liquidations at each point of the curve.
 
@@ -44,7 +44,7 @@ How to run:
  * Install the requirements with `pipenv install`
  * Run the transform job with `pipevn run python etl/apply_model.py`
 
-### 4. API
+### 3. API
 
 This is the API used by the Risk Management oracle.
 
