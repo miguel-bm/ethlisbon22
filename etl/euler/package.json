@@ -1,0 +1,26 @@
+{
+  "name": "ethlisbon22",
+  "version": "1.0.0",
+  "description": "Fetch accounts and market collateral/debts from Euler",
+  "main": "markets.js",
+  "scripts": {
+    "start": "node markets.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miguel-bm/ethlisbon22.git"
+  },
+  "keywords": [
+    "euler"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/miguel-bm/ethlisbon22/issues"
+  },
+  "homepage": "https://github.com/miguel-bm/ethlisbon22#readme",
+  "dependencies": {
+    "ws": "^8.10.0"
+  }
+}
