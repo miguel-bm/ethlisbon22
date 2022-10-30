@@ -1,6 +1,6 @@
-# Accumulated Debt Curve
+# NADIR: Risk Management Oracle for DeFi
 
-This project aims to measure the accumulated DeFi lending market risks accross multiple chains and markets.
+This project, developed in the scope of the ETH Lisbon 2022 Hackathon. aims to measure the accumulated DeFi lending market risks accross multiple chains and markets.
 
 Liquidations are essential to the health of a DeFi lending protocol. However, the debts they cover can result in a downwards pressure over the price of the underlying assets, causing market slippages and even liquidation cascades.
 
